@@ -8,7 +8,16 @@ The titles of the fields are "Date", "IP", "Request", "Status", "User Agent". Th
 * The tool takes "accessslog", "startDate", "duration" and "threshold" as command line arguments. 
 The format of "startDate" is of "yyyy-MM-dd.HH:mm:ss".
 "duration" can take only "hourly", "daily" as inputs and "threshold" can be an integer.
-
+* This tool uses:
+  * Java 1.8
+  * Maven
+  * Spring Boot
+  * Spring Batch
+  * Spring JPA
+  * Flyway
+  * Lombok
+  * MySQL
+  * H2
 # Setting Up The Environment
 * MySQL
   * You can run a MySQL docker container as below:
