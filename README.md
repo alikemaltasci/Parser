@@ -1,4 +1,4 @@
-# Parser Tool - Spring Batch Demo 
+# Parser Tool - A Spring Batch Demo 
 
 * The goal is to write a parser in Java that parses web server access log file, loads the log to MySQL and checks if a given IP makes more than a certain number of requests for the given duration. 
 
@@ -23,7 +23,7 @@ The format of "startDate" is of "yyyy-MM-dd.HH:mm:ss".
   * You can run a MySQL docker container as below:
     
     ```
-    docker run --name mysql_parser_db -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=parser_db -e MYSQL_USER=wh_parser -e MYSQL_PASSWORD=wh_parser -d -p 3310:3306 mysql:8.0
+    docker container run --name mysql_parser_db -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=parser_db -e MYSQL_USER=wh_parser -e MYSQL_PASSWORD=wh_parser -d -p 3310:3306 mysql:8.0
     ```
   * Or you can use your own MySQL. But in this case, you have to change below parameters in `application.properties` file accordingly:
     
