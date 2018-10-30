@@ -1,11 +1,11 @@
-# Parser Tool
+# Parser Tool - Spring Batch Demo 
 
 * The goal is to write a parser in Java that parses web server access log file, loads the log to MySQL and checks if a given IP makes more than a certain number of requests for the given duration. 
 
 * This tool can parse and load the given log file(access.log) to MySQL. The delimiter of the log file is pipe (|). 
 The titles of the fields are "Date", "IP", "Request", "Status", "User Agent". The date format is "yyyy-MM-dd HH:mm:ss.SSS".
 
-* The tool takes "accessslog", "startDate", "duration" and "threshold" as command line arguments. 
+* The tool takes "accesslog", "startDate", "duration" and "threshold" as command line arguments. 
 The format of "startDate" is of "yyyy-MM-dd.HH:mm:ss".
 "duration" can take only "hourly", "daily" as inputs and "threshold" can be an integer.
 * This tool uses:
