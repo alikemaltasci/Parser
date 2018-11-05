@@ -18,7 +18,7 @@ public class ArgumentGetter {
 
         Optional<List<String>> optionValues = Optional.ofNullable(args.getOptionValues(argumentName));
 
-        return optionValues.filter(list -> list.size() > 0).map(values -> values.get(0))
+        return optionValues.filter(list -> !list.isEmpty()).map(values -> values.get(0))
                 .filter(value -> !value.equals(""));
     }
 }

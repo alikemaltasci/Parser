@@ -50,7 +50,7 @@ public class AccessLogProcessorTest {
     @Test
     public void processWhenArgumentsAreNotValid() throws Exception {
         doThrow(new NotValidArgumentException("")).when(accessLogArgumentValidator).validate(any());
-        accessLogProcessor.process(null);
+        accessLogProcessor.process(new DefaultApplicationArguments(new String[]{""}));
 
         verify(blockedClientRepository, times(0)).saveAll(any());
     }

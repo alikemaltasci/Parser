@@ -18,7 +18,6 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.support.CompositeItemProcessor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,12 +31,10 @@ class AccessLogReportJobConfig {
     private static final String ACCESS_LOG_REPORT_JOB = "ACCESS_LOG_REPORT_JOB";
     private static final String CHUNK_STEP = "CHUNK_STEP";
     private static final String OVERRIDDEN_BY_EXPRESSION = null;
+    private static final AccessLogRepository OVERRIDDEN_ACCESS_LOG_BY_EXPRESSION = null;
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-
-    @Autowired
-    private AccessLogRepository accessLogRepository;
 
     @Value("${batchStep.chunkSize}")
     private int chunkSize;
@@ -51,7 +48,8 @@ class AccessLogReportJobConfig {
     @Bean
     public Step chunkStep() {
         return stepBuilderFactory.get(CHUNK_STEP).<AccessLog, AccessLog>chunk(chunkSize)
-                .reader(reader(OVERRIDDEN_BY_EXPRESSION)).processor(processor()).writer(writer()).build();
+                .reader(reader(OVERRIDDEN_BY_EXPRESSION)).processor(processor(OVERRIDDEN_ACCESS_LOG_BY_EXPRESSION))
+                .writer(writer()).build();
     }
 
     @Bean
@@ -62,7 +60,7 @@ class AccessLogReportJobConfig {
 
     @Bean
     @StepScope
-    public ItemProcessor<AccessLog, AccessLog> processor() {
+    public ItemProcessor<AccessLog, AccessLog> processor(AccessLogRepository accessLogRepository) {
         LocalDateTime latestAccessDate = Optional.ofNullable(accessLogRepository.findLatestAccessDate())
                 .orElse(LocalDateTime.MIN);
         CompositeItemProcessor<AccessLog, AccessLog> compositeItemProcessor = new CompositeItemProcessor<>();
