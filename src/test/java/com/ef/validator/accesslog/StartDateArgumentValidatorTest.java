@@ -1,6 +1,9 @@
 package com.ef.validator.accesslog;
 
-import com.ef.exception.NotValidArgumentException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import com.ef.validator.ValidationResult;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -9,6 +12,7 @@ import org.springframework.boot.DefaultApplicationArguments;
 
 public class StartDateArgumentValidatorTest {
 
+    private static final String ERROR_MESSAGE_NO_ARG = "startDate argument has to be provided in the format: yyyy-MM-dd.HH:mm:ss";
     @InjectMocks
     StartDateArgumentValidator startDateArgumentValidator;
 
@@ -17,18 +21,30 @@ public class StartDateArgumentValidatorTest {
         MockitoAnnotations.initMocks(this);
     }
 
-    @Test(expected = NotValidArgumentException.class)
-    public void throwsExceptionWhenNoArgumentPresented() throws Exception {
-        startDateArgumentValidator.validate(new DefaultApplicationArguments(new String[]{""}));
+    @Test
+    public void returnsErrorWhenNoArgumentPresented() {
+        ValidationResult validationResult = startDateArgumentValidator
+                .validate(new DefaultApplicationArguments(new String[]{""}));
+        assertTrue(validationResult.hasErrors());
+        assertEquals(1, validationResult.getErrors().size());
+        assertEquals(ERROR_MESSAGE_NO_ARG, validationResult.getErrors().get(0));
     }
 
-    @Test(expected = NotValidArgumentException.class)
-    public void throwsExceptionWhenEmptyArgumentValuePresented() throws Exception {
-        startDateArgumentValidator.validate(new DefaultApplicationArguments(new String[]{"--startDate"}));
+    @Test
+    public void returnsErrorWhenEmptyArgumentValuePresented() {
+        ValidationResult validationResult = startDateArgumentValidator
+                .validate(new DefaultApplicationArguments(new String[]{"--startDate"}));
+        assertTrue(validationResult.hasErrors());
+        assertEquals(1, validationResult.getErrors().size());
+        assertEquals(ERROR_MESSAGE_NO_ARG, validationResult.getErrors().get(0));
     }
 
-    @Test(expected = NotValidArgumentException.class)
-    public void throwsExceptionWhenNotParsableDatePresented() throws Exception {
-        startDateArgumentValidator.validate(new DefaultApplicationArguments(new String[]{"--startDate=10.01.2018"}));
+    @Test
+    public void returnsErrorWhenNotParsableDatePresented() {
+        ValidationResult validationResult = startDateArgumentValidator
+                .validate(new DefaultApplicationArguments(new String[]{"--startDate=10.01.2018"}));
+        assertTrue(validationResult.hasErrors());
+        assertEquals(1, validationResult.getErrors().size());
+        assertEquals(ERROR_MESSAGE_NO_ARG, validationResult.getErrors().get(0));
     }
 }

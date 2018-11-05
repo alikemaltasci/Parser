@@ -1,8 +1,9 @@
 package com.ef.validator.accesslog;
 
-import com.ef.exception.NotValidArgumentException;
 import com.ef.util.ArgumentGetter;
 import com.ef.validator.ArgumentValidator;
+import com.ef.validator.ValidationResult;
+import java.util.Optional;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
 
@@ -14,11 +15,16 @@ public class DurationArgumentValidator implements ArgumentValidator {
     private static final String DUR_HOURLY = "hourly";
 
     @Override
-    public void validate(final ApplicationArguments args) throws NotValidArgumentException {
+    public ValidationResult validate(final ApplicationArguments args) {
 
-        ArgumentGetter.getArgument(args, ARG_DURATION)
-                .filter(element -> (element.equals(DUR_HOURLY) || element.equals(DUR_DAILY))).orElseThrow(
-                () -> new NotValidArgumentException(
-                        ARG_DURATION + " argument has to be provided as " + DUR_DAILY + " or " + DUR_HOURLY));
+        Optional<String> argument = ArgumentGetter.getArgument(args, ARG_DURATION)
+                .filter(element -> (element.equals(DUR_HOURLY) || element.equals(DUR_DAILY)));
+
+        ValidationResult validationResult = new ValidationResult();
+        if (!argument.isPresent()) {
+            validationResult
+                    .addError(ARG_DURATION + " argument has to be provided as " + DUR_DAILY + " or " + DUR_HOURLY);
+        }
+        return validationResult;
     }
 }

@@ -2,14 +2,12 @@ package com.ef.process;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.ef.data.repository.BlockedClientRepository;
-import com.ef.exception.NotValidArgumentException;
+import com.ef.validator.ValidationResult;
 import com.ef.validator.accesslog.AccessLogArgumentValidator;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +25,8 @@ import org.springframework.boot.DefaultApplicationArguments;
 
 public class AccessLogProcessorTest {
 
+    private static final ApplicationArguments EMPTY_ARGUMENT = new DefaultApplicationArguments(new String[]{""});
+    private static final String ERROR_MESSAGE = "Error message";
     @Mock
     AccessLogArgumentValidator accessLogArgumentValidator;
 
@@ -49,46 +49,59 @@ public class AccessLogProcessorTest {
 
     @Test
     public void processWhenArgumentsAreNotValid() throws Exception {
-        doThrow(new NotValidArgumentException("")).when(accessLogArgumentValidator).validate(any());
-        accessLogProcessor.process(new DefaultApplicationArguments(new String[]{""}));
+        when(accessLogArgumentValidator.validate(EMPTY_ARGUMENT)).thenReturn(getValidationResultWithError());
+        accessLogProcessor.process(EMPTY_ARGUMENT);
 
         verify(blockedClientRepository, times(0)).saveAll(any());
     }
 
+    private ValidationResult getValidationResultWithError() {
+        ValidationResult validationResult = new ValidationResult();
+        validationResult.addError(ERROR_MESSAGE);
+        return validationResult;
+    }
+
     @Test
     public void processWhenArgumentsAreValid() throws Exception {
-        doNothing().when(accessLogArgumentValidator).validate(any());
+        ApplicationArguments validArguments = getValidArguments("daily");
+        when(accessLogArgumentValidator.validate(validArguments)).thenReturn(getValidationResultWithoutError());
         when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(any());
 
-        accessLogProcessor.process(getValidArguments("daily"));
+        accessLogProcessor.process(validArguments);
 
         verify(blockedClientRepository, times(1)).saveAll(any());
     }
 
+    private ValidationResult getValidationResultWithoutError() {
+        return new ValidationResult();
+    }
+
     @Test
     public void processWhenDurationDaily() throws Exception {
-        doNothing().when(accessLogArgumentValidator).validate(any());
+        ApplicationArguments dailyArguments = getValidArguments("daily");
+        when(accessLogArgumentValidator.validate(dailyArguments)).thenReturn(getValidationResultWithoutError());
         when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(null);
         ArgumentCaptor valueCapture = ArgumentCaptor.forClass(LocalDateTime.class);
         when(blockedClientRepository
                 .findClientsToBeBlocked(any(LocalDateTime.class), (LocalDateTime) valueCapture.capture(),
                         any(Long.class))).thenReturn(new ArrayList<>());
 
-        accessLogProcessor.process(getValidArguments("daily"));
+        accessLogProcessor.process(dailyArguments);
 
         assertEquals("2017-01-02T15:00", valueCapture.getValue().toString());
     }
 
     @Test
     public void processWhenDurationHourly() throws Exception {
-        doNothing().when(accessLogArgumentValidator).validate(any());
+        ApplicationArguments hourlyArguments = getValidArguments("hourly");
+        when(accessLogArgumentValidator.validate(hourlyArguments)).thenReturn(getValidationResultWithoutError());
         when(jobLauncher.run(any(Job.class), any(JobParameters.class))).thenReturn(null);
         ArgumentCaptor valueCapture = ArgumentCaptor.forClass(LocalDateTime.class);
         when(blockedClientRepository
                 .findClientsToBeBlocked(any(LocalDateTime.class), (LocalDateTime) valueCapture.capture(),
                         any(Long.class))).thenReturn(new ArrayList<>());
 
-        accessLogProcessor.process(getValidArguments("hourly"));
+        accessLogProcessor.process(hourlyArguments);
 
         assertEquals("2017-01-01T16:00", valueCapture.getValue().toString());
     }

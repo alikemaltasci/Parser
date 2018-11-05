@@ -1,7 +1,7 @@
 package com.ef.validator.accesslog;
 
-import com.ef.exception.NotValidArgumentException;
 import com.ef.validator.ArgumentValidator;
+import com.ef.validator.ValidationResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -22,12 +22,15 @@ public class AccessLogArgumentValidator implements ArgumentValidator {
     private ThresholdArgumentValidator thresholdArgumentValidator;
 
     @Override
-    public void validate(final ApplicationArguments args) throws NotValidArgumentException {
+    public ValidationResult validate(final ApplicationArguments args) {
 
+        ValidationResult validationResult = new ValidationResult();
         ArgumentValidator[] validators = getValidators();
         for (ArgumentValidator validator : validators) {
-            validator.validate(args);
+            validationResult.getErrors().addAll(validator.validate(args).getErrors());
         }
+
+        return validationResult;
     }
 
     private ArgumentValidator[] getValidators() {

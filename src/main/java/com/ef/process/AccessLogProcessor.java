@@ -2,8 +2,8 @@ package com.ef.process;
 
 import com.ef.data.model.BlockedClient;
 import com.ef.data.repository.BlockedClientRepository;
-import com.ef.exception.NotValidArgumentException;
 import com.ef.util.ArgumentGetter;
+import com.ef.validator.ValidationResult;
 import com.ef.validator.accesslog.AccessLogArgumentValidator;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -53,10 +53,9 @@ public class AccessLogProcessor {
     public void process(final ApplicationArguments args)
             throws JobParametersInvalidException, JobExecutionAlreadyRunningException, JobRestartException, JobInstanceAlreadyCompleteException {
 
-        try {
-            accessLogArgumentValidator.validate(args);
-        } catch (NotValidArgumentException iae) {
-            log.error("Error in argument validation: {}", iae);
+        ValidationResult validationResult = accessLogArgumentValidator.validate(args);
+        if (validationResult.hasErrors()) {
+            validationResult.getErrors().forEach(log::error);
             return;
         }
 
