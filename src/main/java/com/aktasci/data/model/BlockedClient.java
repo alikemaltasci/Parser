@@ -11,17 +11,17 @@ import lombok.Data;
 @Data
 public class BlockedClient {
 
-    @Id
-    @SequenceGenerator(name = "BlockedClientSequence", sequenceName = "BLOCKED_CLIENT_PK", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BlockedClientSequence")
-    private Long id;
+  @Id
+  @SequenceGenerator(name = "BLOCKED_CLIENT_SEQ")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BLOCKED_CLIENT_SEQ")
+  private Long id;
 
-    private String ip;
-    private Long requestCount;
-    private String description;
+  private String ip;
+  private Long requestCount;
+  private String description;
 
-    public BlockedClient(final String ipArg, final Long requestCountArg) {
-        this.ip = ipArg;
-        this.requestCount = requestCountArg;
-    }
+  public BlockedClient(final String ipArg, final Long requestCountArg) {
+    this.ip = ipArg;
+    this.requestCount = requestCountArg;
+  }
 }

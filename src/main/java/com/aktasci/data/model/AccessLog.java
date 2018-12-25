@@ -12,14 +12,14 @@ import lombok.Data;
 @Data
 public class AccessLog {
 
-    @Id
-    @SequenceGenerator(name = "AccessLogSequence", sequenceName = "ACCESS_LOG_PK", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AccessLogSequence")
-    private Long id;
+  @Id
+  @SequenceGenerator(name = "ACCESS_LOG_SEQ")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ACCESS_LOG_SEQ")
+  private Long id;
 
-    private LocalDateTime accessDate;
-    private String ip;
-    private String request;
-    private Integer status;
-    private String userAgent;
+  private LocalDateTime accessDate;
+  private String ip;
+  private String request;
+  private Integer status;
+  private String userAgent;
 }
